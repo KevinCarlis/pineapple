@@ -1,11 +1,11 @@
 # Pineapple
 
 
-##Installation
+## Installation
 
 
-##How to Play
+## How to Play
 
 
 
-##Needs work
+## Needs work
