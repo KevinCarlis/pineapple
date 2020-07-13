@@ -18,5 +18,5 @@ Some things might seem erroneous
 - There is a dead screen between turns because you aren't supposed to see the card your opponent discards
 
 
-## Note on Documentation/Testing
-This project is just something to do in my spare time so I might never get around to this. I see this mostly as an exercise and am solely interested in functionality.
+## Note on Packaging
+This project is just something to do in my spare time so I might never get around to properly packaging, documenting and testing. I see this mostly as an exercise and am solely interested in functionality.
