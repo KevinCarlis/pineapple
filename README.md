@@ -2,7 +2,7 @@
 
 
 ## Installation
-Requires python3 and jupyter notebook
+Requires python3
 
 ## How to Play
 Pineapple is a form of Chinese Poker. The goal is to create three poker hands where the bottom is better than the middle which is better than the top. The top can only hold three cards and therefore can only score a Three of a Kind, a Pair or a High Card. After your initial five cards you are dealt three cards per turn where you play two and discard one.
