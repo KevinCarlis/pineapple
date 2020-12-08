@@ -27,8 +27,6 @@ LIME  = ( 50, 205,  50)
 RED   = (255,   0,   0)
 
 
-class PlayingDeck
-
 class CardSprite:
     def __init__ (self, rank, suit, outline=False, image=None):
         self.rank = rank
