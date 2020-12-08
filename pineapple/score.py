@@ -1,4 +1,5 @@
 try:
+    from constants import *
     import sys
     import os
     os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
@@ -12,20 +13,6 @@ except ImportError as err:
     print("couldn't load module. %s" % (err))
     sys.exit(2)
 
-
-FPS = 30
-SPACE = 10
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 600
-CARD_WIDTH = 70
-CARD_HEIGHT = 105
-BOARD_WIDTH = (CARD_WIDTH + SPACE) * 5 - SPACE
-BOARD_HEIGHT = SCREEN_HEIGHT
-BLACK = (  0,   0,   0)
-WHITE = (255, 255, 255)
-GREEN = (  0,  60,   0)
-LIME  = ( 50, 205,  50)
-RED   = (255,   0,   0)
 
 def score_boards(boards):
     for board in boards:

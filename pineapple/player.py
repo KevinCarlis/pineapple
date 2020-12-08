@@ -1,13 +1,5 @@
 try:
     import sys
-    import os
-    os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
-    import pygame
-    import pygame.freetype
-    from pygame.locals import *
-    import random
-    from enum import Enum
-    from collections import Counter
 except ImportError as err:
     print("couldn't load module. %s" % (err))
     sys.exit(2)

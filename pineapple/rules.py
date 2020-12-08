@@ -1,37 +1,75 @@
 try:
     import sys
-    import os
-    os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
-    import pygame
-    import pygame.freetype
-    from pygame.locals import *
-    from button import PygButton
-    from player import Player
-    from card import Deck
-    from board import Board
-    from score import score_boards, winner
+    from collections import Counter
 except ImportError as err:
     print("couldn't load module. %s" % (err))
     sys.exit(2)
 
+def hand_result(sorted_hand):
+    """Scores a list of card object
+    """
+    rank_list = [card.rank for card in sorted_hand]
+    rank_counts = Counter(rank_list)
+    suit_check = sorted_hand[0].suit
+    for card in sorted_hand:
+        if len(sorted_hand) == 3:
+            break
+        if card.suit != suit_check:
+            break
+    else:
+        if str(sorted_hand[0].rank) == 'A':
+            if int(sorted_hand[4]) == 10:
+                return 'Royal Flush', 8 * 13 ** 5 + score_hand(sorted_hand)
+            elif int(sorted_hand[1]) == 5 and int(sorted_hand[4]) == 2:
+                return 'Five High Straight Flush', 8 * 13 ** 5 + score_hand(sorted_hand[1:] + [1])
+            else:
+                return 'Ace High Flush', 5 * 13 ** 5 + score_hand(sorted_hand)
+        elif int(sorted_hand[0]) - int(sorted_hand[4]) == 4:
+            return f'{sorted_hand[0].rank.name} High Straight Flush', 8 * 13 ** 5 + score_hand(sorted_hand)
+        else:
+            return f'{sorted_hand[0].rank.name} High Flush', 5 * 13 ** 5 + score_hand(sorted_hand)
+    if len(rank_counts) == 1:
+        return (
+            f'Three of a Kind, {sorted_hand[0].rank.name}s', 
+            3 * 13 ** 5 + score_hand(sorted_hand + [1, 1])
+        )
+    if len(rank_counts) == 2:
+        if 4 in rank_counts.values():
+            return f'Four of a Kind, {sorted_hand[0].rank.name}s', 7 * 13 ** 5 + score_hand(sorted_hand)
+        elif 3 in rank_counts.values():
+            return (
+                f'Full House {sorted_hand[0].rank.name}s over {sorted_hand[4].rank.name}s', 
+                6 * 13 ** 5 + score_hand(sorted_hand)
+            )
+        else:
+            return f'Pair of {sorted_hand[0].rank.name}s', 1 * 13 ** 5 + score_hand(sorted_hand + [1, 1])
+    elif len(rank_counts) == 3:
+        if 3 in rank_counts.values():
+            return f'Three of a Kind, {sorted_hand[0].rank.name}s', 3 * 13 ** 5 + score_hand(sorted_hand)
+        elif 2 in rank_counts.values():
+            return (
+                f'Two Pair, {sorted_hand[0].rank.name}s over {sorted_hand[2].rank.name}s', 
+                2 * 13 ** 5 + score_hand(sorted_hand)
+            )
+        else:
+            return f'{sorted_hand[0].rank.name} High', score_hand(sorted_hand + [1, 1])
+    elif len(rank_counts) == 4:
+        return  f'Pair of {sorted_hand[0].rank.name}s', 1 * 13 ** 5 + score_hand(sorted_hand)
+    else:
+        if int(sorted_hand[0]) - int(sorted_hand[4]) == 4:
+            return f'{sorted_hand[0].rank.name} High Straight', 4 * 13 ** 5 + score_hand(sorted_hand)
+        elif int(sorted_hand[0]) == 14 and int(sorted_hand[1]) == 5 and int(sorted_hand[4]) == 2:
+            return 'Five High Straight', 4 * 13 ** 5 + score_hand(sorted_hand[1:] + [1])
+        else:
+            return f'{sorted_hand[0].rank.name} High', score_hand(sorted_hand)
 
-pygame.freetype.init()
-FONT = pygame.freetype.Font(None, size=32)
-FPS = 30
-SPACE = 10
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 600
-CARD_WIDTH = 70
-CARD_HEIGHT = 105
-BOARD_WIDTH = (CARD_WIDTH + SPACE) * 5 - SPACE
-BOARD_HEIGHT = SCREEN_HEIGHT
-BLACK = (  0,   0,   0)
-WHITE = (255, 255, 255)
-GREEN = (  0,  60,   0)
-LIME  = ( 50, 205,  50)
-RED   = (255,   0,   0)
-BUTTON_HEIGHT = 40
-BUTTON_WIDTH = 120
+
+def score_hand(hand):
+    return (int(hand[0]) * 13 ** 4 
+           + int(hand[1]) * 13 ** 3 
+           + int(hand[2]) * 13 ** 2 
+           + int(hand[3]) * 13
+           + int(hand[4]))
 
 
 def play(screen, players):
@@ -142,130 +180,8 @@ def play(screen, players):
     return win_screen(screen, boards)
 
 
-def win_screen(screen, boards):
-    score_boards(boards)
-    winner(boards)
-
-    background = pygame.Surface(screen.get_size())
-    background = background.convert()
-    background.fill(GREEN)
-
-    replay_rect = Rect(
-        (
-            SCREEN_WIDTH - BUTTON_WIDTH - SPACE, 
-            SPACE, 
-            BUTTON_WIDTH, 
-            BUTTON_HEIGHT
-        )
-    )
-    replay_button = PygButton(replay_rect, caption="Play Again")
-
-    home_rect = Rect(
-        (
-            SCREEN_WIDTH - BUTTON_WIDTH - SPACE, 
-            BUTTON_HEIGHT + SPACE * 2, 
-            BUTTON_WIDTH, 
-            BUTTON_HEIGHT
-        )
-    )
-    home_button = PygButton(home_rect, caption="Home")
-
-    for count, board in enumerate(boards):
-        board.rect = (SCREEN_HEIGHT / 5, (SCREEN_WIDTH * (count + 1))/(len(boards) + 1))
-
-    player_text = [FONT.render(board.player.name, fgcolor=LIME) for board in boards]
-    i = 0
-    for image, rect in player_text:
-        rect.top = SPACE * 2
-        rect.centerx = (SCREEN_WIDTH * (i + 1)) / (len(boards) + 1)
-        i += 1
-
-    fouls = []
-    for board in boards:
-        if board['top'].score == 0:
-            fouls.append(FONT.render('FOUL', fgcolor=RED))
-        else:
-            fouls.append(None)
-    i = 0
-    for foul in fouls:
-        if foul:
-            image, rect = foul
-            rect.top = 32 + SPACE * 3
-            rect.centerx = (SCREEN_WIDTH * (i + 1)) / (len(boards) + 1)
-        i += 1
-
-    clock = pygame.time.Clock()
-
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                sys.exit()
-            elif 'click' in replay_button.handleEvent(event):
-                return (board.player for board in boards)
-            elif 'click' in home_button.handleEvent(event):
-                return
-        screen.blit(background, (0, 0))
-        for board in boards:
-            board.draw(screen)
-        for image, rect in player_text:
-            screen.blit(image, rect)
-        for foul in fouls:
-            if foul:
-                image, rect = foul
-                screen.blit(image, rect)
-        replay_button.draw(screen)
-        home_button.draw(screen)
-        pygame.display.update()
-        clock.tick(FPS)
 
 
-def home_screen(screen):
-    background = pygame.Surface(screen.get_size())
-    background = background.convert()
-    background.fill(GREEN)
 
-    titlefont = pygame.font.Font(None, 124)
-    title = titlefont.render("Pineapple", 1, LIME)
-    titlepos = title.get_rect()
-    titlepos.top = SPACE * 3
-    titlepos.centerx = background.get_rect().centerx
-    
-    play_1_rect = Rect((0, 0, BUTTON_WIDTH, BUTTON_HEIGHT))
-    play_1_rect.centerx = background.get_rect().centerx
-    play_1_rect.centery = background.get_rect().centery
-    button1 = PygButton(play_1_rect, caption='One Player')
-    
-    play_2_rect = Rect((0, 0, BUTTON_WIDTH, BUTTON_HEIGHT))
-    play_2_rect.centerx = background.get_rect().centerx
-    play_2_rect.centery = background.get_rect().centery + BUTTON_HEIGHT + SPACE
-    button2 = PygButton(play_2_rect, caption='Two Players')
-    
-    play_3_rect = Rect((0, 0, BUTTON_WIDTH, BUTTON_HEIGHT))
-    play_3_rect.centerx = background.get_rect().centerx
-    play_3_rect.centery = background.get_rect().centery + (BUTTON_HEIGHT + SPACE) * 2
-    button3 = PygButton(play_3_rect, caption='Three Players')
 
-    clock = pygame.time.Clock()
-
-    players = None
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                sys.exit()
-            elif 'click' in button1.handleEvent(event):
-                players = (Player('Player1'),)
-            elif 'click' in button2.handleEvent(event):
-                players = (Player('Player1'), Player('Player2'))
-            elif 'click' in button3.handleEvent(event):
-                players = (Player('Player1'), Player('Player2'), Player('Player3'))
-        if players: 
-            players = play(screen, players)
-        else:
-            screen.blit(background, (0, 0))
-            screen.blit(title, titlepos)
-            button1.draw(screen)
-            button2.draw(screen)
-            button3.draw(screen)
-            pygame.display.update()
-            clock.tick(FPS)
 

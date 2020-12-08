@@ -1,13 +1,14 @@
 try:
-    import sys
+    from constants import *
     import os
     os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
     import pygame
+    import sys
+
+    import pygame
     import pygame.freetype
     from pygame.locals import *
-    import random
-    from enum import Enum
-    from collections import Counter
+
 except ImportError as err:
     print("couldn't load module. %s" % (err))
     sys.exit(2)
@@ -22,7 +23,7 @@ GRAY      = (128, 128, 128)
 LIGHTGRAY = (212, 208, 200)
 
 
-class PygButton(object):
+class PygButton():
 
     def __init__(self, rect=None, caption='', bgcolor=None, fgcolor=None, 
         font=None, normal=None, down=None, highlight=None):
@@ -114,7 +115,7 @@ class PygButton(object):
         elif self.mouseOverButton and not self._rect.collidepoint(eventObj.pos):
             # if mouse has exited the button:
             self.mouseOverButton = False
-            hasExited = True 
+            hasExited = True
             # call mouseExit() later, since we want mouseMove() to be handled before mouseExit()
 
         if self._rect.collidepoint(eventObj.pos):

@@ -5,15 +5,54 @@ try:
     import pygame
     import pygame.freetype
     from pygame.locals import *
-    from collections import Counter
+    from deck import Deck
     from constants import *
 except ImportError as err:
     print("couldn't load module. %s" % (err))
     sys.exit(2)
 
 
-class PlayingDeck:
-    pass
+IMAGE_FOLDER = os.path.join('..', 'images')
+
+
+def load_png(name, rect=True, dimensions=None):
+    """ Load image and return image object"""
+    fullname = os.path.join(IMAGE_FOLDER, name)
+    try:
+        image = pygame.image.load(fullname)
+        if image.get_alpha() is None:
+            image = image.convert()
+        else:
+            image = image.convert_alpha()
+        if dimensions:
+            image = pygame.transform.scale(image, dimensions)
+    except pygame.error as message:
+        print('Cannot load image:', fullname)
+        raise SystemExit(message)
+    if rect:
+        return image, image.get_rect()
+    else:
+        return image
+
+
+
+
+
+
+
+class Dealer:
+
+    def __init__(self, image_name='blue_back.png', rect=None, rules=None):
+        self._cards = Deck()
+        self._image, self._rect = load_png(image_name, dimensions=CARD_SIZE)
+
+    def draw(self, surface):
+        surface.blit(self._image, self._rect)
+
+    def deal(*hands, num_cards=1):
+        for hand in hands:
+            hand.add_card(
+            
 
 
 class CardSprite:
@@ -47,11 +86,8 @@ class CardSprite:
 
 
 class CardHolder(pygame.sprite.Sprite):
-    def __init__(self, lefttop=None):
-        if lefttop:
-            self._rect = pygame.Rect(lefttop, (CARD_WIDTH, CARD_HEIGHT))
-        else:
-            self._rect = pygame.Rect((0, 0), (CARD_WIDTH, CARD_HEIGHT))
+    def __init__(self, lefttop=(0, 0)):
+        self._rect = pygame.Rect(lefttop, (CARD_WIDTH, CARD_HEIGHT))
         self.image = pygame.Surface(self.rect.size)
         self.image.fill(LIME)
         self._hitbox = self.rect.inflate(SPACE * 5, SPACE * 5)
@@ -194,7 +230,7 @@ class BoardRow:
     @property
     def cards(self):
         return [slot.card for slot in self if slot.card]
-
+    
     @cards.setter
     def cards(self, new_cards):
         new_count = len(new_cards)
@@ -426,18 +462,34 @@ class Board:
         self.rows.pop('hand', None)
 
 
-def load_png(name, dimensions=None):
-    """ Load image and return image object"""
-    fullname = os.path.join('..', 'images', name)
-    try:
-        image = pygame.image.load(fullname)
-        if image.get_alpha() is None:
-            image = image.convert()
+
+
+if __name__ == "__main__":
+    pygame.init()
+    logo = pygame.image.load(os.path.join(IMAGE_FOLDER, 'PineLogo.png'))
+    pygame.display.set_icon(logo)
+    pygame.display.set_caption("PIECES TEST")
+    
+    screen = pygame.display.set_mode((SCREEN_SIZE))
+    background = pygame.Surface(screen.get_size())
+    background = background.convert()
+    background.fill(GREEN)
+
+    clock = pygame.time.Clock()
+
+
+    image_name = 'blue_back.png'
+    d = PlayingDeck(image_name)
+
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
         else:
-            image = image.convert_alpha()
-        if dimensions:
-            image = pygame.transform.scale(image, dimensions)
-    except pygame.error as message:
-        print('Cannot load image:', fullname)
-        raise SystemExit(message)
-    return image, image.get_rect()
+            screen.blit(background, (0, 0))
+            d.draw(screen)
+            pygame.display.update()
+            clock.tick(FPS)
+
+    
