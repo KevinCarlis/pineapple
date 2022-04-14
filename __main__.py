@@ -1,4 +1,4 @@
-print("___-menu___")
+print("___menu___")
 print("1: test deck \n\
 2: test screen \n\
 3: play game")
@@ -11,3 +11,6 @@ if ch == 1:
     for card in deck:
         print(card)
     print(deck._cards)
+
+if ch == 2:
+    from pine.
