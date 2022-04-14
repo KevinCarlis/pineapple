@@ -1,2 +1,2 @@
 myenv
-pineapple/__pycache__*
+**__pycache__
