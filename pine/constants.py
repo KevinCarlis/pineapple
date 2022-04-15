@@ -6,7 +6,8 @@ SCREEN_HEIGHT = 600
 SCREEN_SIZE = (1000, 600)
 
 """File Locations"""
-IMAGE_FOLDER = os.path.join('..', 'images')
+cwd = os.path.abspath(os.path.dirname(__file__))
+IMAGE_FOLDER = os.path.abspath(os.path.join(cwd, '..', 'images'))
 
 """Game Constants"""
 FPS = 30

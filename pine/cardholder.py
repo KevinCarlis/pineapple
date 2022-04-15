@@ -5,7 +5,7 @@ try:
 
     os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
     import pygame as pg
-    import constants
+    from . import constants
 except ImportError as err:
     print(f"Unable to load module. \n{err}")
     sys.exit(2)

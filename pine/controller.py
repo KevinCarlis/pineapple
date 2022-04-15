@@ -4,8 +4,9 @@ try:
     import random
     os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
     import pygame as pg
-    import constants
-    from deck import Deck, CardHolder
+    from . import constants 
+    from .deck import Deck
+    from .cardholder import CardSlot
 except ImportError as err:
     print(f"Unable to load module. \n{err}")
     sys.exit(2)
@@ -25,7 +26,7 @@ class Controller:
         self.cards = pg.sprite.Group()
         self.cards.add(*self.deck(2))
         self.move_card = None
-        self.slots = [CardHolder(), CardHolder(rect=(100, 300))]
+        self.slots = [CardSlot(), CardSlot(rect_pos=(100, 300))]
         for c in self.cards:
             c.draggable = True
             print(c)
@@ -57,9 +58,10 @@ class Controller:
                     slot(self.move_card)
             self.move_card = None
 
-
-if __name__ == "__main__":
+def main():
     pg.init()
+    pg.display.list_modes()
+    os.environ["SDL_VIDEODRIVER"] = "dummy"
     logo = pg.image.load(os.path.join(IMAGE_FOLDER, 'PineLogo.png'))
     pg.display.set_icon(logo)
     pg.display.set_caption("DECK TEST")
@@ -91,3 +93,4 @@ if __name__ == "__main__":
         for card in test.deck._cards:
             print(card.loc)
         pg.display.quit()
+

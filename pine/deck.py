@@ -203,7 +203,7 @@ class Deck:
     def __iter__(self):
         return self
 
-    def __call__(self, cards: int):
+    def __call__(self, cards=1):
         if cards <= len(self):
             return tuple(next(self) for _ in range(cards))
         else:
@@ -237,9 +237,3 @@ class Deck:
         if len(cards) < 52:
             print('Deck created with less than 52 cards')
 
-
-if __name__ == "__main__":
-    deck = Deck()
-    for card in deck:
-        print(card)
-    print(deck._cards)
