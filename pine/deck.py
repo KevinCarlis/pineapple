@@ -90,11 +90,11 @@ class Suit(Enum):
 
 class Card(pg.sprite.Sprite):
 
-    def __init__(self, rank, suit, loc, rect=None, image_name=None, outline=False):
+    def __init__(self, rank, suit, loc=None, rect=None, image_name=None, outline=False):
         pg.sprite.Sprite.__init__(self)
         self.rank = rank
         self.suit = suit
-        self.loc = loc
+        self.loc = loc or (0, 0)
         self.rect = rect or (0, 0)
         self.image_name = image_name or str(self) + '.png'
         if outline:
@@ -176,12 +176,12 @@ class Deck:
         if rect:
             self.rect = rect
         else:
-            pos = pos or (0, 0)
+            self.pos = pos or (0, 0)
             size = size or CARD_SIZE
             self.rect = pg.Rect(pos, size)
         self.image = load_png(image_name, rect=self.rect)
         self._dealt = 0
-        self.cards = [Card(rank, suit, self) for rank in Rank for suit in Suit]
+        self.cards = [Card(rank, suit, self.pos, size) for rank in Rank for suit in Suit]
         self.shuffle()
 
     def __str__(self):

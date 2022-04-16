@@ -5,7 +5,7 @@ try:
     os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
     import pygame as pg
     from . import constants 
-    from .deck import Deck
+    from .deck import Deck, Card
     from .cardholder import CardSlot
 except ImportError as err:
     print(f"Unable to load module. \n{err}")
@@ -24,7 +24,6 @@ class Controller:
     def __init__(self):
         self.deck = Deck(pos=(200, 200))
         self.cards = pg.sprite.Group()
-        self.cards.add(*self.deck(2))
         self.move_card = None
         self.slots = [CardSlot(), CardSlot(rect_pos=(100, 300))]
         for c in self.cards:
@@ -59,9 +58,10 @@ class Controller:
             self.move_card = None
 
 def main():
+    #os.environ["SDL_AUDEODRIVER"] = "dummy"
     pg.init()
-    pg.display.list_modes()
-    os.environ["SDL_VIDEODRIVER"] = "dummy"
+    #pg.display.list_modes()
+    #os.environ["SDL_VIDEODRIVER"] = "dummy"
     logo = pg.image.load(os.path.join(IMAGE_FOLDER, 'PineLogo.png'))
     pg.display.set_icon(logo)
     pg.display.set_caption("DECK TEST")
@@ -74,6 +74,8 @@ def main():
     clock = pg.time.Clock()
 
     test = Controller()
+    for slot in test.slots:
+        print(slot)
 
     try:
         while True:
@@ -91,6 +93,6 @@ def main():
                 clock.tick(FPS)
     except SystemExit:
         for card in test.deck._cards:
-            print(card.loc)
+            print(f'{card} at {card.loc}')
         pg.display.quit()
 

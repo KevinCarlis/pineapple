@@ -8,8 +8,8 @@ ch = int(input())
 
 if ch == 0:
     from pine.constants import cwd, IMAGE_FOLDER
-    print(cwd)
-    print(IMAGE_FOLDER)
+    print(f'Code folder: {cwd}')
+    print(f'Image folder: {IMAGE_FOLDER}')
 
 if ch == 1:
     from pine.deck import Deck
