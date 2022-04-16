@@ -178,7 +178,7 @@ class Deck:
         else:
             self.pos = pos or (0, 0)
             size = size or CARD_SIZE
-            self.rect = pg.Rect(pos, size)
+            self.rect = pg.Rect(self.pos, size)
         self.image = load_png(image_name, rect=self.rect)
         self._dealt = 0
         self.cards = [Card(rank, suit, self.pos, size) for rank in Rank for suit in Suit]

@@ -4,20 +4,12 @@ try:
     import random
     os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
     import pygame as pg
-    from . import constants 
+    from .constants import IMAGE_FOLDER, FPS, SCREEN_SIZE, LIME, GREEN 
     from .deck import Deck, Card
-    from .cardholder import CardSlot
+    from .slots import CardSlot
 except ImportError as err:
     print(f"Unable to load module. \n{err}")
     sys.exit(2)
-
-
-IMAGE_FOLDER = constants.IMAGE_FOLDER or os.path.join('..', 'images')
-FPS = constants.FPS or 30
-SCREEN_SIZE = constants.SCREEN_SIZE
-LIME = constants.LIME or (50, 205, 50)
-GREEN = constants.GREEN
-
 
 class Controller:
 
