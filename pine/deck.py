@@ -6,6 +6,7 @@ try:
     os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
     import pygame as pg
     from . import constants
+    from . import abc
 except ImportError as err:
     print(f"Unable to load module. \n{err}")
     sys.exit(2)
@@ -88,18 +89,21 @@ class Suit(Enum):
         return self.value
 
 
-class Card(pg.sprite.Sprite):
+class Card(abc.DragMixin, abc.ABGameObject):
 
-    def __init__(self, rank, suit, loc=None, rect=None, image_name=None, outline=False):
-        pg.sprite.Sprite.__init__(self)
+    defaults = {
+        'rect_size': CARD_SIZE,
+        'inflate': (50, 50),
+    }
+
+    def __init__(self, rank, suit, outline=False, **kwargs):
         self.rank = rank
         self.suit = suit
-        self.loc = loc or (0, 0)
-        self.rect = rect or (0, 0)
-        self.image_name = image_name or str(self) + '.png'
+        self.image_name = str(self) + '.png'
+        self.__dict__.update({**Card.defaults, **kwargs})
+        super().__init__(**self.__dict__)
         if outline:
             pg.draw.rect(self.image, BLACK, self.rect, 1)
-        self.image = None
         self.draggable = False
         self.dragging = False
 
@@ -111,46 +115,6 @@ class Card(pg.sprite.Sprite):
 
     def __int__(self):
         return int(self.rank)
-
-    def drag(self, pg_event):
-        if pg_event.type not in (pg.MOUSEMOTION, pg.MOUSEBUTTONUP, pg.MOUSEBUTTONDOWN):
-            return
-
-        if self.dragging:
-            if pg_event.type == pg.MOUSEMOTION:
-                self.rect.center = pg_event.pos
-            if pg_event.type == pg.MOUSEBUTTONUP:
-                print(self, self.loc, self.rect)
-                self.dragging = False
-        elif self.draggable and self.rect.collidepoint(pg_event.pos):
-            if pg_event.type == pg.MOUSEBUTTONDOWN:
-                self.dragging = True
-
-    def draw(self, surface):
-        surface.blit(self.image, self.rect)
-
-    def move(self, x, y):
-        self.rect.move_ip(x, y)
-
-    def update(self):
-        if not self.image:
-            self.image = load_png(self.image_name, rect=self._rect)
-        if not self.dragging:
-            if self.loc:
-                self.rect = (self.loc.rect.x, self.loc.rect.y)
-
-    @property
-    def rect(self):
-        return self._rect
-
-    @rect.setter
-    def rect(self, rect):
-        if isinstance(rect, tuple):
-            self._rect = pg.Rect(rect, CARD_SIZE)
-        elif isinstance(rect, pg.Rect):
-            self._rect = rect
-        else:
-            raise TypeError(f"Card.rect must be tuple or Rect not {type(rect)}")
 
 
 class Deck:
@@ -176,12 +140,12 @@ class Deck:
         if rect:
             self.rect = rect
         else:
-            self.pos = pos or (0, 0)
+            pos = pos or (0, 0)
             size = size or CARD_SIZE
-            self.rect = pg.Rect(self.pos, size)
+            self.rect = pg.Rect(pos, size)
         self.image = load_png(image_name, rect=self.rect)
         self._dealt = 0
-        self.cards = [Card(rank, suit, self.pos, size) for rank in Rank for suit in Suit]
+        self.cards = [Card(rank, suit, rect_pos=self.rect.topleft, rect_size=size) for rank in Rank for suit in Suit]
         self.shuffle()
 
     def __str__(self):
@@ -236,4 +200,51 @@ class Deck:
         self._cards = cards
         if len(cards) < 52:
             print('Deck created with less than 52 cards')
+
+
+class CardSlot(abc.SlotMixin, abc.ABGameObject):
+    """PyGame playing card holder
+    kwargs
+       size: int number of cards per slot
+
+    """
+    defaults = {
+        'size': 1,
+        'rect_size': CARD_SIZE,
+        'color': LIME,
+        'inflate': (50, 50),
+    }
+
+    def __init__(self, **kwargs):
+        self.__dict__.update({**CardSlot.defaults, **kwargs})
+        super().__init__(**self.__dict__)
+
+    def __repr__(self):
+        if self():
+            return f"Slot containing {self()}"
+        else:
+            return f"Slot at {self.rect.topleft}"
+
+    def _handle_overflow(self, value):
+        ret = self().pop()
+        self._remove([ret])
+        self._add(value)
+        return ret
+
+
+class Hand(abc.SlotMixin):
+    defaults = {
+        'size': 5,
+        'rect_size': CARD_SIZE,
+        'x' : 100,
+        'y': 100,
+    }
+    def __init__(self, **kwargs):
+        self.__dict__.update({**Hand.defaults, **kwargs})
+        super().__init__(self.size)
+        self(*(CardSlot(rect_pos=(2 * self.rect_size[0] * i + self.x, self.y)) for i in range(self.size)))
+
+    def draw(self, surface):
+        for slot in self():
+            slot.draw(surface)
 

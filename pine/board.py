@@ -5,8 +5,7 @@ try:
     os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
     import pygame as pg
     from .constants import IMAGE_FOLDER, FPS, SCREEN_SIZE, LIME, GREEN 
-    from .deck import Deck, Card
-    from .slots import CardSlot
+    from .deck import Deck, Card, CardSlot
 except ImportError as err:
     print(f"Unable to load module. \n{err}")
     sys.exit(2)
@@ -68,6 +67,7 @@ def main():
     test = Controller()
     for slot in test.slots:
         print(slot)
+    print(test.deck.rect.topleft)
 
     try:
         while True:
@@ -85,6 +85,6 @@ def main():
                 clock.tick(FPS)
     except SystemExit:
         for card in test.deck._cards:
-            print(f'{card} at {card.loc}')
+            print(f'{card} at {card.rect.topleft}')
         pg.display.quit()
 
