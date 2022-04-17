@@ -20,12 +20,12 @@ if ch == 1:
     print(f'Whole deck:\n{deck._cards}')
 
 if ch == 2:
-    from pine.cardholder import CardSlot, Hand
+    from pine.deck import CardSlot, Hand
     slot_test = CardSlot()
     hand = Hand()
     print(hand.elements)
 
 if ch == 3:
-    from pine.controller import main
+    from pine.board import main
     main()
 
