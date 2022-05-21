@@ -25,6 +25,8 @@ WHITE = (255, 255, 255)
 GREEN = (  0,  60,   0)
 LIME  = ( 50, 205,  50)
 RED   = (255,   0,   0)
+cwd = os.path.abspath(os.path.dirname(__file__))
+IMAGE_FOLDER = os.path.abspath(os.path.join(cwd, '..', 'images'))
 
 
 class CardSprite:
@@ -439,7 +441,7 @@ class Board:
 
 def load_png(name, dimensions=None):
     """ Load image and return image object"""
-    fullname = os.path.join('images', name)
+    fullname = os.path.join(IMAGE_FOLDER, name)
     try:
         image = pygame.image.load(fullname)
         if image.get_alpha() is None:

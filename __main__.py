@@ -25,11 +25,13 @@ WHITE = (255, 255, 255)
 GREEN = (  0,  60,   0)
 LIME  = ( 50, 205,  50)
 RED   = (255,   0,   0)
+cwd = os.path.abspath(os.path.dirname(__file__))
+IMAGE_FOLDER = os.path.abspath(os.path.join(cwd, 'images'))
 
 
 def main():
     pygame.init()
-    logo = pygame.image.load(os.path.join('images', 'PineLogo.png'))
+    logo = pygame.image.load(os.path.join(IMAGE_FOLDER, 'PineLogo.png'))
     pygame.display.set_icon(logo)
     pygame.display.set_caption("Pineapple")
 
