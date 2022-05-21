@@ -439,7 +439,7 @@ class Board:
 
 def load_png(name, dimensions=None):
     """ Load image and return image object"""
-    fullname = os.path.join('..', 'images', name)
+    fullname = os.path.join('images', name)
     try:
         image = pygame.image.load(fullname)
         if image.get_alpha() is None:

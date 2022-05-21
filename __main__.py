@@ -5,7 +5,7 @@ try:
     import pygame
     import pygame.freetype
     from pygame.locals import *
-    from rules import home_screen, win_screen, play
+    from pine.rules import home_screen, win_screen, play
 except ImportError as err:
     print("couldn't load module. %s" % (err))
     sys.exit(2)
@@ -29,7 +29,7 @@ RED   = (255,   0,   0)
 
 def main():
     pygame.init()
-    logo = pygame.image.load(os.path.join('..', 'images', 'PineLogo.png'))
+    logo = pygame.image.load(os.path.join('images', 'PineLogo.png'))
     pygame.display.set_icon(logo)
     pygame.display.set_caption("Pineapple")
 
