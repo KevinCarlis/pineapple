@@ -5,11 +5,11 @@ try:
     import pygame
     import pygame.freetype
     from pygame.locals import *
-    from button import PygButton
-    from player import Player
-    from card import Deck
-    from board import Board
-    from score import score_boards, winner
+    from .button import PygButton
+    from .player import Player
+    from .card import Deck
+    from .board import Board
+    from .score import score_boards, winner
 except ImportError as err:
     print("couldn't load module. %s" % (err))
     sys.exit(2)

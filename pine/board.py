@@ -6,7 +6,7 @@ try:
     import pygame.freetype
     from pygame.locals import *
     from collections import Counter
-    from card import hand_result
+    from .card import hand_result
 except ImportError as err:
     print("couldn't load module. %s" % (err))
     sys.exit(2)
